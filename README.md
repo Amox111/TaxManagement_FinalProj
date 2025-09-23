@@ -2,7 +2,7 @@
 
 #### Functions
 * Add (เพิ่มข้อมูลการชำระภาษี)
-* Search (search by tax number or ID)
+* Search (search by payerID)
 * Update (example; change anount or type or date)
 * Delete (ลบข้อมูลตามหมายเลขการชำระ)
 
@@ -13,5 +13,4 @@
 * Amount 
 * Date (PaymentDate)
 
-#### Display Menu
-1. 
+
