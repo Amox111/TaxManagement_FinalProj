@@ -1,4 +1,4 @@
-## [60]Tax management system
+## [60]Tax management
 
 #### Functions
 * Add (เพิ่มข้อมูลการชำระภาษี)
@@ -12,5 +12,7 @@
 * Type (PaymentType)
 * Amount 
 * Date (PaymentDate)
+
+
 
 
