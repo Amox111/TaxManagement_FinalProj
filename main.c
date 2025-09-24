@@ -1,15 +1,12 @@
 #include<stdio.h>
 #include<string.h>
 
-//Structure - use struct bc contain differnt date type
-struct Payment
-{
+//Structure 
     char paymentID[10];
     char payerName[30];
     char taxType[20];
     int amount;
     char paymentDate[11];
-};
 
 //Display Menu
 void displayMenu(){
@@ -22,20 +19,52 @@ void displayMenu(){
     printf("Enter your choice:");
 }
 
-void loadCSV(){
-    FILE *file = fopen("record.csv", "w")
+void readCSV(){
+    FILE *file = fopen("record.csv", "r");
     if (file == NULL) {
-        print("Can not open file\n");
+        printf("Can not open file\n");
         return;
     }
-    fscanf(file,"paymentID,payerName,taxType,amount,paymentData");
-    
+/*  while (fscanf(file,"%S,%s,%s,%d,%d\n",paymentID,payerName,taxType,&amount,paymentData) !== EOF)
+    fclose(file);
+    return;
+}*/
+}
 
+void writeCSV(){
+    FILE *file = fopen("record.csv", "w");
+    if (file == NULL) {
+    printf("Can not open file\n");
+    return;
+    }    
+    fclose(file);
+
+}
+
+//add
+void addRecord(){
+    int paymentID, payerName;
+    printf("Type the paymentID: \n");
+    scanf("%s", paymentID);
+    printf("Type the payer's name: \n");
+    scanf("%s", payerName);
+
+}
+
+
+void search(){
+
+
+}
 
 
 
 int main(){
-    displayMenu();
+    readCSV();
+
+
+        displayMenu();
+        addRecord();
 
 
 
