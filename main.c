@@ -18,6 +18,24 @@ typedef struct {
 Payment records[MAX_RECORDS];
 int recordCount = 0;
 
+void saveCSV() {
+    FILE *file = fopen(FILENAME, "w");
+    if (file == NULL) {
+        printf("Cannot open file\n");
+        return;
+    }
+    for (int i = 0; i < recordCount; i++) {
+        fprintf(file, "%s,%s,%s,%.2f,%s\n",
+                records[i].paymentID,
+                records[i].payerName,
+                records[i].taxType,
+                records[i].amount,
+                records[i].paymentDate);
+    }
+    fclose(file);
+    printf("Saved successfully\n");
+}
+
 void readCSV() {
     FILE *file = fopen(FILENAME, "r");
     if (file == NULL) {
@@ -39,30 +57,10 @@ void readCSV() {
     fclose(file);
 }
 
-void saveCSV() {
-    FILE *file = fopen(FILENAME, "w");
-    if (file == NULL) {
-        printf("Cannot open file\n");
-        return;
-    }
-    for (int i = 0; i < recordCount; i++) {
-        fprintf(file, "%s,%s,%s,%.2f,%s\n",
-                records[i].paymentID,
-                records[i].payerName,
-                records[i].taxType,
-                records[i].amount,
-                records[i].paymentDate);
-    }
-    fclose(file);
-    printf("Saved successfully\n");
-}
-
 //add
 void addRecord() {
-    if (recordCount >= MAX_RECORDS) {
-        printf("Maximum records reached!\n");
-        return;
-    }
+    if (recordCount >= MAX_RECORDS) { printf("Maximum records reached!\n"); return; }
+
     printf("Enter Payment ID: ");
     scanf("%s", records[recordCount].paymentID);
     while (getchar() != '\n'); //clear input buffer
@@ -82,7 +80,7 @@ void addRecord() {
     printf("Enter Date (yyyy-mm-dd): ");
     scanf("%s", records[recordCount].paymentDate);
     while (getchar() != '\n'); 
-    
+
     recordCount++;
     saveCSV();
     printf("Record added!\n");
