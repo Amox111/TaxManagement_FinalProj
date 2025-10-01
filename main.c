@@ -65,14 +65,19 @@ void addRecord() {
     }
     printf("Enter Payment ID: ");
     scanf("%s", records[recordCount].paymentID);
+    while (getchar() != '\n'); // Clear input buffer
     printf("Enter Payer Name: ");
-    scanf(" %[^\n]", records[recordCount].payerName);
+    scanf("%[^\n]", records[recordCount].payerName);
+    while (getchar() != '\n'); 
     printf("Enter Tax Type: ");
-    scanf("%s", records[recordCount].taxType);
+    scanf("%[^\n]", records[recordCount].taxType); // Read entire line for taxType
+    while (getchar() != '\n'); 
     printf("Enter Amount: ");
     scanf("%lf", &records[recordCount].amount);
+    while (getchar() != '\n');
     printf("Enter Date (yyyy-mm-dd): ");
     scanf("%s", records[recordCount].paymentDate);
+    while (getchar() != '\n'); 
     recordCount++;
     saveCSV();
     printf("Record added!\n");
