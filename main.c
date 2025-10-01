@@ -7,6 +7,7 @@
 #define STRING_SIZE 100
 //unit test and end to end test
 
+//ระบบจัดการข้อมูลการชำระภาษี
 typedef struct {
     char paymentID[STRING_SIZE];
     char payerName[STRING_SIZE];
@@ -234,3 +235,4 @@ int main(){
     return 0;
 
 }
+
