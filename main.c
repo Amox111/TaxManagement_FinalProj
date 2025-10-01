@@ -63,7 +63,7 @@ void addRecord() {
 
     printf("Enter Payment ID: ");
     scanf("%s", records[recordCount].paymentID);
-    while (getchar() != '\n'); //clear input buffer
+    while (getchar() != '\n'); 
 
     printf("Enter Payer Name: ");
     scanf("%[^\n]", records[recordCount].payerName);
@@ -195,13 +195,12 @@ void displayMenu(){
 
 int main(){
     int choice;
-     
     readCSV();
     do{
         displayMenu();
         if (scanf("%d", &choice) != 1){
             while (getchar() != '\n'); 
-            choice = -1; //กำหนดค่าไม่ถูกต้องเรียก default case
+            choice = -1; 
         }
 
         switch (choice){
@@ -233,4 +232,5 @@ int main(){
     } while (choice !=7);
 
     return 0;
+
 }
