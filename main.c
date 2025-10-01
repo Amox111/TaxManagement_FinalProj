@@ -15,7 +15,7 @@ typedef struct {
     char paymentDate[STRING_SIZE];
 } Payment;
 
-Payment records[MAX_RECORDS]; //array collect the information
+Payment records[MAX_RECORDS];
 int recordCount = 0;
 
 void readCSV() {
@@ -65,19 +65,24 @@ void addRecord() {
     }
     printf("Enter Payment ID: ");
     scanf("%s", records[recordCount].paymentID);
-    while (getchar() != '\n'); // Clear input buffer
+    while (getchar() != '\n'); //clear input buffer
+
     printf("Enter Payer Name: ");
     scanf("%[^\n]", records[recordCount].payerName);
     while (getchar() != '\n'); 
+
     printf("Enter Tax Type: ");
-    scanf("%[^\n]", records[recordCount].taxType); // Read entire line for taxType
+    scanf("%[^\n]", records[recordCount].taxType); 
     while (getchar() != '\n'); 
+
     printf("Enter Amount: ");
     scanf("%lf", &records[recordCount].amount);
     while (getchar() != '\n');
+
     printf("Enter Date (yyyy-mm-dd): ");
     scanf("%s", records[recordCount].paymentDate);
     while (getchar() != '\n'); 
+    
     recordCount++;
     saveCSV();
     printf("Record added!\n");
@@ -130,11 +135,11 @@ void deleteRecord(){
         scanf("%s", confirmation);
 
         if (strcmp(confirmation, "YES") == 0) {
-            for (int i = foundID; i < recordCount - 1; i++) {        //เลื่อนรายการที่อยู่ด้านหลังทั้งหมดขึ้นมาทับตำแหน่งที่ถูกลบ
-                records[i] = records[i+1];                           //เริ่มจากตำแหน่งที่พบ จนถึงรายการก่อนสุดท้าย
+            for (int i = foundID; i < recordCount - 1; i++) {     
+                records[i] = records[i+1];                           
             }
             
-            recordCount--; //ลดจำนวนรายการทั้งหมดลง 1
+            recordCount--; 
             
             saveCSV(); 
             printf("Record with PaymentID %s has been deleted successfully.\n", searchID);
@@ -149,32 +154,40 @@ void deleteRecord(){
 
 //search
 void searchRecord() {
-    char searchID[STRING_SIZE];
-    printf("Enter Payment ID to search: ");
-    scanf("%s", searchID);
+    char searchTerm[STRING_SIZE];
+    int foundCount = 0;
+    printf("Enter payment ID or payer name to search:: ");
+
+    while (getchar() != '\n'); 
+    scanf("%[^\n]", searchTerm);
+
     for (int i = 0; i < recordCount; i++) {
-        if (strcmp(records[i].paymentID, searchID) == 0) {
-            printf("Found: %s, %s, %s, %.2f, %s\n",
-                   records[i].paymentID,
-                   records[i].payerName,
-                   records[i].taxType,
-                   records[i].amount,
-                   records[i].paymentDate);
-            return;
+        int match = 0;
+        if (strcmp(records[i].paymentID, searchTerm) == 0) {
+            match = 1;
+        } 
+        if (!match && strstr(records[i].payerName, searchTerm) != NULL) {
+            match = 1;
+        }
+        if (match) {
+            print_record(&records[i]);
+            foundCount++;
         }
     }
-    printf("Record not found!\n");
-}
 
+    if (foundCount == 0) {
+        printf("No records found");
+    } 
+}
 
 //Display Menu
 void displayMenu(){
     printf("\n      Tax Management System\n");
     printf("===============Menu===============\n");
-    printf("[1] Add the information\n");
-    printf("[2] Update the information\n");
-    printf("[3] Delete the data\n");  
-    printf("[4] Search(by paymentID)\n");
+    printf("[1] Add the record\n");
+    printf("[2] Update the record\n");
+    printf("[3] Delete the record\n");  
+    printf("[4] Search(by paymentID or payer name)\n");
     printf("[5] \n");
     printf("[6] \n");
     printf("[7] Exit\n");
