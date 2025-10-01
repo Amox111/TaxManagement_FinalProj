@@ -40,41 +40,45 @@ void saveCSV(){
 void readCSV(){
     FILE *file = fopen("record.csv", "r");
     if (file == NULL) {
-        printf("Can not open %S file\n", file);
+        printf("Can not open %s file\n", FILENAME);
         recordCount = 0;
         return;
     }
     char line[512];
     recordCount = 0;
 
+    if (fgets(line, sizeof(line), file) == NULL) { 
+    fclose(file);
+    return; 
+    }
+
     while (fgets(line, sizeof(line), file) != NULL && recordCount < MAX_RECORDS) {
-        // ลบอักขระขึ้นบรรทัดใหม่ (\n)
         line[strcspn(line, "\n")] = 0;
 
         paymentRecord newRecord;
         char *token;
         int fieldIndex = 0;
 
-        // ใช้ strtok เพื่อแยกข้อมูลด้วยคอมมา (',')
+        // ใช้strtokแยกข้อมูลด้วย,
         token = strtok(line, ",");
         while(token != NULL) {
             switch(fieldIndex) {
-                case 0: // PaymentID
+                case 0: 
                     strncpy(newRecord.paymentID, token, STRING_SIZE - 1);
                     newRecord.paymentID[STRING_SIZE - 1] = '\0';
                     break;
-                case 1: // PayerName
+                case 1:
                     strncpy(newRecord.payerName, token, STRING_SIZE - 1);
                     newRecord.payerName[STRING_SIZE - 1] = '\0';
                     break;
-                case 2: // TaxType
+                case 2: 
                     strncpy(newRecord.taxType, token, STRING_SIZE - 1);
                     newRecord.taxType[STRING_SIZE - 1] = '\0';
                     break;
-                case 3: // Amount
+                case 3:
                     newRecord.amount = atof(token);
                     break;
-                case 4: // PaymentDate
+                case 4:
                     strncpy(newRecord.paymentDate, token, STRING_SIZE - 1);
                     newRecord.paymentDate[STRING_SIZE - 1] = '\0';
                     break;
@@ -88,12 +92,8 @@ void readCSV(){
             records[recordCount++] = newRecord;
         }
     }
-
     fclose(file);
 }
-
-
-
 
 
 //Add
@@ -103,6 +103,8 @@ void addRecord(){
         return;
     }
     paymentRecord newRecord; 
+    
+    while (getchar() != '\n'); 
     printf("========Add the information=======\n");
     printf("Type paymentID(by follow this format -Aa001-):");
     scanf("%s", newRecord.paymentID);
@@ -155,48 +157,83 @@ void updateRecord(){
 
 }
 
-//Delete
-void deleteRecord(){
-
-
-}
-
-
 void print_record(const paymentRecord *rec) {
     printf("| %-10s | %-20s | %-12s | %10.2f | %-10s |\n",
            rec->paymentID, rec->payerName, rec->taxType, rec->amount, rec->paymentDate);
 }
+
+// Delete
+void deleteRecord(){
+    char searchID[STRING_SIZE];
+    int foundID = -1;
+    
+    while (getchar() != '\n'); 
+    
+    printf("\n====== Delete the information ======\n");
+    printf("Type the PaymentID that you want to delete: ");
+    scanf("%s", searchID);
+
+    for (int i = 0; i < recordCount; i++){
+        if (strcmp(records[i].paymentID, searchID) == 0){
+            foundID = i;
+            break;
+        }
+    }
+    
+    if (foundID != -1){
+        printf("\nFound data for deletion (PaymentID: %s):\n", searchID);
+        print_record(&records[foundID]);
+        
+        printf("\nConfirm deletion? (Type 'YES' to proceed): ");
+        char confirmation[10];
+        scanf("%s", confirmation);
+
+        if (strcmp(confirmation, "YES") == 0) {
+            for (int i = foundID; i < recordCount - 1; i++) {        //เลื่อนรายการที่อยู่ด้านหลังทั้งหมดขึ้นมาทับตำแหน่งที่ถูกลบ
+                records[i] = records[i+1];                           //เริ่มจากตำแหน่งที่พบ จนถึงรายการก่อนสุดท้าย
+            }
+            
+            recordCount--; //ลดจำนวนรายการทั้งหมดลง 1
+            
+            saveCSV(); 
+            printf("Record with PaymentID %s has been deleted successfully.\n", searchID);
+            
+        } else {
+            printf("Deletion cancelled.\n");
+        }
+    } else {
+        printf("Record with PaymentID %s not found.\n", searchID);
+    }
+}
+
 
 
 void searchRecord() {
     char searchTerm[STRING_SIZE];
     int foundCount = 0;
 
-    printf("\n--- ค้นหาข้อมูล ---\n");
-    printf("ป้อนหมายเลขการชำระ (PaymentID) หรือ ชื่อผู้ชำระ (PayerName) ที่ต้องการค้นหา: ");
+    printf("Type payment ID: ");
     scanf(" %[^\n]", searchTerm);
 
-    printf("\n--- ผลการค้นหาสำหรับ '%s' ---\n", searchTerm);
-    printf("--------------------------------------------------------------------------------\n");
+    printf("____________________________________________________________________________\n");
     printf("| %-10s | %-20s | %-12s | %-10s | %-10s |\n", 
            "PaymentID", "PayerName", "TaxType", "Amount", "Date");
-    printf("--------------------------------------------------------------------------------\n");
+    printf("____________________________________________________________________________\n");
 
     for (int i = 0; i < recordCount; i++) {
-        // ค้นหาจาก PaymentID หรือ PayerName
-        if (strstr(records[i].paymentID, searchTerm) != NULL ||
-            strstr(records[i].payerName, searchTerm) != NULL) {
+        if (strstr(records[i].paymentID, searchTerm) != NULL) {
             
             print_record(&records[i]);
             foundCount++;
         }
     }
+    printf("____________________________________________________________________________\n");
 }
 
 
 //Display Menu
 void displayMenu(){
-    printf("      Tax Management System\n");
+    printf("\n      Tax Management System\n");
     printf("===============Menu===============\n");
     printf("[1] Add the information\n");
     printf("[2] Update the information\n");
