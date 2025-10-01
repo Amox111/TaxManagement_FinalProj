@@ -7,7 +7,6 @@
 #define STRING_SIZE 100
 //unit test and end to end test
 
-//ระบบจัดการข้อมูลการชำระภาษี
 typedef struct {
     char paymentID[STRING_SIZE];
     char payerName[STRING_SIZE];
@@ -62,23 +61,23 @@ void readCSV() {
 void addRecord() {
     if (recordCount >= MAX_RECORDS) { printf("Maximum records reached!\n"); return; }
 
-    printf("Enter Payment ID: ");
+    printf("Enter Payment ID:");
     scanf("%s", records[recordCount].paymentID);
-    while (getchar() != '\n'); 
+    while (getchar() != '\n'); //clear input buffer
 
-    printf("Enter Payer Name: ");
+    printf("Enter Payer Name:");
     scanf("%[^\n]", records[recordCount].payerName);
     while (getchar() != '\n'); 
 
-    printf("Enter Tax Type: ");
+    printf("Enter Tax Type:");
     scanf("%[^\n]", records[recordCount].taxType); 
     while (getchar() != '\n'); 
 
-    printf("Enter Amount: ");
+    printf("Enter Amount:");
     scanf("%lf", &records[recordCount].amount);
     while (getchar() != '\n');
 
-    printf("Enter Date (yyyy-mm-dd): ");
+    printf("Enter Date (yyyy-mm-dd):");
     scanf("%s", records[recordCount].paymentDate);
     while (getchar() != '\n'); 
 
@@ -90,13 +89,13 @@ void addRecord() {
 //update
 void updateRecord() {
     char searchID[STRING_SIZE];
-    printf("Enter Payment ID to update: ");
+    printf("Enter Payment ID to update:");
     scanf("%s", searchID);
     for (int i = 0; i < recordCount; i++) {
         if (strcmp(records[i].paymentID, searchID) == 0) {
             printf("Enter new Amount: ");
             scanf("%lf", &records[i].amount);
-            printf("Enter new Date (yyyy-mm-dd): ");
+            printf("Enter new Date (yyyy-mm-dd):");
             scanf("%s", records[i].paymentDate);
             saveCSV();
             printf("Record updated!\n");
@@ -117,8 +116,7 @@ void deleteRecord(){
     int foundID = -1;
     
     while (getchar() != '\n'); 
-    printf("\n====== Delete the information ======\n");
-    printf("Type the PaymentID that you want to delete: ");
+    printf("Type the PaymentID that you want to delete:");
     scanf("%s", searchID);
 
     for (int i = 0; i < recordCount; i++){
@@ -129,7 +127,7 @@ void deleteRecord(){
     }
     
     if (foundID != -1){
-        printf("\nConfirm deletion? (Type 'YES' to proceed): ");
+        printf("\nConfirm deletion? (Type 'YES' to proceed):");
         char confirmation[10];
         scanf("%s", confirmation);
 
@@ -155,7 +153,7 @@ void deleteRecord(){
 void searchRecord() {
     char searchTerm[STRING_SIZE];
     int foundCount = 0;
-    printf("Enter payment ID or payer name to search:: ");
+    printf("Enter payment ID or payer name to search:");
 
     while (getchar() != '\n'); 
     scanf("%[^\n]", searchTerm);
@@ -233,6 +231,4 @@ int main(){
     } while (choice !=7);
 
     return 0;
-
 }
-
