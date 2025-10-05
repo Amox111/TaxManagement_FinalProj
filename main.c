@@ -57,6 +57,11 @@ void readCSV() {
     fclose(file);
 }
 
+void print_record(const Payment *rec) {
+    printf("Found: %s, %s, %s, %.2f, %s \n",
+           rec->paymentID, rec->payerName, rec->taxType, rec->amount, rec->paymentDate);
+}
+
 //add
 void addRecord() {
     if (recordCount >= MAX_RECORDS) { printf("Maximum records reached!\n"); return; }
@@ -103,11 +108,6 @@ void updateRecord() {
         }
     }
     printf("Record not found!\n");
-}
-
-void print_record(const Payment *rec) {
-    printf("Found: %s, %s, %s, %.2f, %s \n",
-           rec->paymentID, rec->payerName, rec->taxType, rec->amount, rec->paymentDate);
 }
 
 //Delete
@@ -205,6 +205,16 @@ int main(){
         switch (choice){
             case 1:
                 addRecord();
+                printf("\nWant to add another record?\n");
+                printf("Type 1 to add another record\n");
+                printf("Type anything to back to main manu\n");
+                char again[5];
+                scanf("%s", again);
+                if (strcmp(again, "1") == 0) {
+                    addRecord();
+                } else {
+                    break;
+                }
                 break;
             case 2:
                 updateRecord();
