@@ -39,7 +39,6 @@ void saveCSV() {
 void readCSV() {
     FILE *file = fopen(FILENAME, "r");
     if (file == NULL) {
-        printf("Cannot open %s file\n", FILENAME);
         recordCount = 0;
         return;
     }
@@ -58,7 +57,7 @@ void readCSV() {
 }
 
 void print_record(const Payment *rec) {
-    printf("Found: %s, %s, %s, %.2f, %s \n",
+    printf("%s, %s, %s, %.2f, %s \n",
            rec->paymentID, rec->payerName, rec->taxType, rec->amount, rec->paymentDate);
 }
 
@@ -66,48 +65,133 @@ void print_record(const Payment *rec) {
 void addRecord() {
     if (recordCount >= MAX_RECORDS) { printf("Maximum records reached!\n"); return; }
 
+    Payment newRecord;
+
     printf("Enter Payment ID:");
-    scanf("%s", records[recordCount].paymentID);
-    while (getchar() != '\n'); //clear input buffer
+    scanf("%s", newRecord.paymentID);
+    while (getchar() != '\n'); 
 
     printf("Enter Payer Name:");
-    scanf("%[^\n]", records[recordCount].payerName);
+    scanf("%[^\n]", newRecord.payerName);
     while (getchar() != '\n'); 
 
     printf("Enter Tax Type:");
-    scanf("%[^\n]", records[recordCount].taxType); 
+    scanf("%[^\n]", newRecord.taxType); 
     while (getchar() != '\n'); 
 
     printf("Enter Amount:");
-    scanf("%lf", &records[recordCount].amount);
+    if (scanf("%lf", &newRecord.amount) != 1) {
+        printf("Invalid amount entered. Addition cancelled.\n");
+        while (getchar() != '\n'); 
+        return;
+    }
     while (getchar() != '\n');
 
     printf("Enter Date (yyyy-mm-dd):");
-    scanf("%s", records[recordCount].paymentDate);
+    scanf("%s", newRecord.paymentDate);
+    while (getchar() != '\n'); 
+    
+    //Confirm
+    printf("This data will be added:");
+    print_record(&newRecord);
+    printf("Type YES to confirm: ");
+    
+    char confirmation[10];
+    scanf("%s", confirmation);
     while (getchar() != '\n'); 
 
-    recordCount++;
-    saveCSV();
-    printf("Record added!\n");
+    if (strcmp(confirmation, "YES") == 0) {
+        records[recordCount] = newRecord;
+        recordCount++;
+        saveCSV();
+        printf("Record added successfully\n");
+    } else {
+        printf("Cancelled\n");
+    }
 }
 
 //update
 void updateRecord() {
     char searchID[STRING_SIZE];
-    printf("Enter Payment ID to update:");
-    scanf("%s", searchID);
-    for (int i = 0; i < recordCount; i++) {
-        if (strcmp(records[i].paymentID, searchID) == 0) {
-            printf("Enter new Amount: ");
-            scanf("%lf", &records[i].amount);
-            printf("Enter new Date (yyyy-mm-dd):");
-            scanf("%s", records[i].paymentDate);
-            saveCSV();
-            printf("Record updated!\n");
-            return;
+    char again_update_another[5];
+
+    do {
+        printf("\n=======Update Record Menu=======\n");
+        printf("Enter Payment ID to update (Type 'NO' to cancel):");
+        while (getchar() != '\n');
+        scanf("%s", searchID);
+        
+        if (strcmp(searchID, "NO") == 0) {
+            printf("Returning to main menu.\n");
+            break;
         }
-    }
-    printf("Record not found!\n");
+
+        int found_index = -1;
+        for (int i = 0; i < recordCount; i++) {
+            if (strcmp(records[i].paymentID, searchID) == 0) {
+                found_index = i;
+                break;
+            }
+        }
+        
+        if (found_index != -1) {
+            printf("\nCurrent Data: ");
+            print_record(&records[found_index]);
+            
+            char update_choice[5];
+            int done_updating = 0;
+            
+            do {
+                printf("\nWhat would you like to update?\n");
+                printf("[1] New Amount (Current: %.2f)\n", records[found_index].amount);
+                printf("[2] New Date (Current: %s)\n", records[found_index].paymentDate);
+                printf("[3] Finish Updating this Record\n");
+                printf("Enter choice (1, 2, or 3): ");
+                
+                if (scanf("%s", update_choice) != 1) {
+                    while (getchar() != '\n');
+                    continue;
+                }
+                while (getchar() != '\n');
+                
+                if (strcmp(update_choice, "1") == 0) {
+                    printf("Enter new Amount: ");
+                    if (scanf("%lf", &records[found_index].amount) == 1) {
+                        printf("Updated succesfullyll\n");
+                    } else {
+                        printf("Invalid amount entered\n");
+                    }
+                    while (getchar() != '\n');
+                    
+                } else if (strcmp(update_choice, "2") == 0) {
+                    printf("Enter new Date (yyyy-mm-dd):");
+                    scanf("%s", records[found_index].paymentDate);
+                    while (getchar() != '\n');
+                    printf("Date updated in memory.\n");
+
+                } else if (strcmp(update_choice, "3") == 0) {
+                    done_updating = 1;
+                } else {
+                    printf("Invalid choice. Please enter 1, 2, or 3.\n");
+                }
+                
+            } while (done_updating == 0);
+            
+            saveCSV();
+            printf("\nRecord updated successfully and saved to file!\n");
+            printf("Final Record: ");
+            print_record(&records[found_index]);
+
+        } else {
+            printf("Record with ID '%s' not found!\n", searchID);
+        }
+
+        printf("\nDo you want to update another record?\n");
+        printf("Type YES to update another or any other key to return to main menu: ");
+        
+        scanf("%s", again_update_another);
+
+    } while (strcmp(again_update_another, "YES") == 0);
 }
 
 //Delete
@@ -127,6 +211,8 @@ void deleteRecord(){
     }
     
     if (foundID != -1){
+        printf("\nRecord found: \n");
+        print_record(&records[foundID]); 
         printf("\nConfirm deletion? (Type 'YES' to proceed):");
         char confirmation[10];
         scanf("%s", confirmation);
@@ -135,12 +221,9 @@ void deleteRecord(){
             for (int i = foundID; i < recordCount - 1; i++) {     
                 records[i] = records[i+1];                           
             }
-            
             recordCount--; 
-            
             saveCSV(); 
             printf("Record with PaymentID %s has been deleted successfully.\n", searchID);
-            
         } else {
             printf("Deletion cancelled.\n");
         }
@@ -153,11 +236,13 @@ void deleteRecord(){
 void searchRecord() {
     char searchTerm[STRING_SIZE];
     int foundCount = 0;
+    
     printf("Enter payment ID or payer name to search:");
 
     while (getchar() != '\n'); 
     scanf("%[^\n]", searchTerm);
 
+    printf("\n========Search Results========\n");
     for (int i = 0; i < recordCount; i++) {
         int match = 0;
         if (strcmp(records[i].paymentID, searchTerm) == 0) {
@@ -166,15 +251,34 @@ void searchRecord() {
         if (!match && strstr(records[i].payerName, searchTerm) != NULL) {
             match = 1;
         }
+
         if (match) {
+            printf("Result %d: ", foundCount + 1);
             print_record(&records[i]);
             foundCount++;
         }
     }
 
     if (foundCount == 0) {
-        printf("No records found");
-    } 
+        printf("No records found.\n");
+    } else {
+        printf("Total records found: %d\n", foundCount);
+        
+        printf("\nDo you want to update or delete any of these records?\n");
+        printf("Type [U] to update, [D] to delete, or any other key to continue: ");
+        
+        char action[5];
+        while (getchar() != '\n'); 
+        scanf("%s", action);
+        
+        if (action[0] == 'U' || action[0] == 'u') {
+            updateRecord(); 
+        } else if (action[0] == 'D' || action[0] == 'd') {
+            deleteRecord(); 
+        } else {
+            printf("Cancelled\n");
+        }
+    }
 }
 
 //Display Menu
@@ -204,18 +308,19 @@ int main(){
 
         switch (choice){
             case 1:
-                addRecord();
-                printf("\nWant to add another record?\n");
-                printf("Type 1 to add another record\n");
-                printf("Type anything to back to main manu\n");
-                char again[5];
-                scanf("%s", again);
-                if (strcmp(again, "1") == 0) {
+                do {
                     addRecord();
-                } else {
-                    break;
-                }
-                break;
+                    printf("\nWant to add another record?\n");
+                    printf("Type YES to add another record\n");
+                    printf("Type anything to back to main menu\n");
+                    char again[5];
+                    printf("Enter:");
+                    scanf("%s", again);
+                    if (strcmp(again, "YES") != 0) {
+                        break;
+                    }
+                } while (1);
+                break; 
             case 2:
                 updateRecord();
                 break;           
