@@ -1,22 +1,64 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include<assert.h>
 
 #define FILENAME "record.csv"
 #define MAX_RECORDS 100
 #define STRING_SIZE 100
-//unit test and end to end test
 
 typedef struct {
     char paymentID[STRING_SIZE];
     char payerName[STRING_SIZE];
     char taxType[STRING_SIZE];
-    double amount;
+    float amount;
     char paymentDate[STRING_SIZE];
 } Payment;
 
 Payment records[MAX_RECORDS];
 int recordCount = 0;
+
+int isLeap(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+int isValidDate(const char *dateStr) {
+    if (strlen(dateStr) != 10 || dateStr[4] != '-' || dateStr[7] != '-') {     //check format length
+        return 0;
+    }
+
+    for (int i = 0; i < 10; i++) {   //check if parts are digits
+        if (i == 4 || i == 7) continue; 
+        if (!isdigit(dateStr[i])) { return 0; }
+    }
+
+    int year, month, day;     //extract YYYY, MM, DD
+    if (sscanf(dateStr, "%d-%d-%d", &year, &month, &day) != 3) {
+        return 0;
+    }
+
+    if (month < 1 || month > 12) { return 0; }  
+
+    int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
+    
+    if (month == 2 && isLeap(year)) { //leap year(Feb)
+        daysInMonth[2] = 29;
+    }
+    if (day < 1 || day > daysInMonth[month]) { return 0; }
+
+    return 1; //date is valid
+}
+
+int isValidPaymentID(const char *id) {
+    size_t len = strlen(id);
+    if (len != 4) { return 0; }
+    if (!isalpha(id[0])) { return 0; }
+    for (int i = 1; i < 4; i++) {
+        if (!isdigit(id[i])) { return 0; }
+    }
+    return 1;
+}
 
 void saveCSV() {
     FILE *file = fopen(FILENAME, "w");
@@ -61,44 +103,116 @@ void print_record(const Payment *rec) {
            rec->paymentID, rec->payerName, rec->taxType, rec->amount, rec->paymentDate);
 }
 
-//add
 void addRecord() {
     if (recordCount >= MAX_RECORDS) { printf("Maximum records reached!\n"); return; }
-
     Payment newRecord;
+    char firstName[STRING_SIZE / 2];
+    char lastName[STRING_SIZE / 2];
+    int tax_choice;
+    
+    while (getchar() != '\n' && getchar() != EOF);
+//paymentID
+    do {
+        printf("Enter Payment ID (Format: 1 Letter + 3 Digits, e.g., A001):");
+        if (scanf("%s", newRecord.paymentID) != 1) { 
+            printf("Input error. Please try again.\n");
+            while (getchar() != '\n' && getchar() != EOF);
+            continue;
+        }
+        while (getchar() != '\n' && getchar() != EOF); 
 
-    printf("Enter Payment ID:");
-    scanf("%s", newRecord.paymentID);
-    while (getchar() != '\n'); 
+        if (isValidPaymentID(newRecord.paymentID)) {
+            break; 
+        } else {
+            printf("Invalid Payment ID format. Must be 1 letter followed by 3 digits.\n");
+        }
+    } while (1);
 
-    printf("Enter Payer Name:");
-    scanf("%[^\n]", newRecord.payerName);
-    while (getchar() != '\n'); 
+//pyerName
+    printf("Enter Payer's First Name:");
+    if (scanf("%[^\n]", firstName) != 1) { return; }
+    while (getchar() != '\n' && getchar() != EOF); 
 
-    printf("Enter Tax Type:");
-    scanf("%[^\n]", newRecord.taxType); 
-    while (getchar() != '\n'); 
-
-    printf("Enter Amount:");
-    if (scanf("%lf", &newRecord.amount) != 1) {
-        printf("Invalid amount entered. Addition cancelled.\n");
-        while (getchar() != '\n'); 
+    printf("Enter Payer's Last Name:");
+    if (scanf("%[^\n]", lastName) != 1) { return; }
+    while (getchar() != '\n' && getchar() != EOF); 
+    
+    strcpy(newRecord.payerName, firstName);
+    strcat(newRecord.payerName, " ");
+    strcat(newRecord.payerName, lastName);
+    
+//taxType
+    printf("\nSelect Tax Type:\n");
+    printf("[1] PIT (Personal Income Tax)\n");
+    printf("[2] CIT (Corporate Income Tax)\n");
+    printf("[3] VAT (Value Added Tax)\n");
+    printf("[4] WHT (Withholding Tax)\n");
+    printf("[5] SBT (Special Business Tax)\n");
+    printf("[6] SD (Stamp duty)\n");
+    printf("[7] Other (Specify Manually)\n");
+    printf("Enter choice (1-7):");
+    
+    if (scanf("%d", &tax_choice) != 1) {
+        printf("Invalid choice entered. Addition cancelled.\n");
+        while (getchar() != '\n' && getchar() != EOF);
         return;
     }
-    while (getchar() != '\n');
+    while (getchar() != '\n' && getchar() != EOF); 
 
-    printf("Enter Date (yyyy-mm-dd):");
-    scanf("%s", newRecord.paymentDate);
-    while (getchar() != '\n'); 
-    
-    //Confirm
+    switch (tax_choice) {
+        case 1: strcpy(newRecord.taxType, "PIT: Personal Income Tax"); break;
+        case 2: strcpy(newRecord.taxType, "CIT: Corporate Income Tax"); break;
+        case 3: strcpy(newRecord.taxType, "VAT: Value Added Tax"); break;
+        case 4: strcpy(newRecord.taxType, "WHT: Withholding Tax"); break;
+        case 5: strcpy(newRecord.taxType, "SBT: Special Business Tax"); break;
+        case 6: strcpy(newRecord.taxType, "SD: Stamp duty"); break;
+        case 7:
+            printf("Enter Custom Tax Type Name:");
+            if (scanf("%[^\n]", newRecord.taxType) != 1) {
+                printf("Invalid input. Addition cancelled.\n");
+                return;
+            }
+            break;
+        default:
+            printf("Invalid tax type selection. Addition cancelled.\n");
+            return;
+    }
+    while (getchar() != '\n' && getchar() != EOF); 
+
+//amount
+    printf("Enter Amount:");
+    if (scanf("%f", &newRecord.amount) != 1) {
+        printf("Invalid amount entered. Addition cancelled.\n");
+        while (getchar() != '\n' && getchar() != EOF); 
+        return;
+    }
+    while (getchar() != '\n' && getchar() != EOF);
+
+//date
+    do {
+        printf("Enter Date (Format: yyyy-mm-dd):");
+        if (scanf("%s", newRecord.paymentDate) != 1) {
+            printf("Input error. Please try again.\n");
+            while (getchar() != '\n' && getchar() != EOF);
+            continue;
+        }
+        while (getchar() != '\n' && getchar() != EOF); 
+        
+        if (isValidDate(newRecord.paymentDate)) {
+            break; 
+        } else {
+            printf("Invalid Date format or value. Please use yyyy-mm-dd and ensure the date is valid.\n");
+        }
+    } while (1);
+
+//confirm
     printf("This data will be added:");
     print_record(&newRecord);
     printf("Type YES to confirm: ");
     
     char confirmation[10];
-    scanf("%s", confirmation);
-    while (getchar() != '\n'); 
+    if (scanf("%s", confirmation) != 1) { return; }
+    while (getchar() != '\n' && getchar() != EOF); 
 
     if (strcmp(confirmation, "YES") == 0) {
         records[recordCount] = newRecord;
@@ -109,6 +223,7 @@ void addRecord() {
         printf("Cancelled\n");
     }
 }
+
 
 //update
 void updateRecord() {
@@ -281,6 +396,19 @@ void searchRecord() {
     }
 }
 
+/*void test_normal(){
+    printf("Running the add function\n");
+    char paymentID = 'T000';
+    char payerName = 'Tester Tester';
+    char taxType = 'Wealth tax';
+    float amount = 99999;
+    char paymentDate = '2023-01-02';
+
+    assert();
+    printf("Test add passed\n");
+
+}*/
+
 //Display Menu
 void displayMenu(){
     printf("\n      Tax Management System\n");
@@ -289,8 +417,8 @@ void displayMenu(){
     printf("[2] Update the record\n");
     printf("[3] Delete the record\n");  
     printf("[4] Search(by paymentID or payer name)\n");
-    printf("[5] \n");
-    printf("[6] \n");
+    printf("[5] Unit Test\n");
+    printf("[6] E2E Test\n");
     printf("[7] Exit\n");
     printf("==================================\n");
     printf("Enter your choice:");
@@ -331,12 +459,13 @@ int main(){
                 searchRecord();
                 break; 
             case 5:
-                //
+                //Unit test
                 break;           
             case 6:
-                //
+                //E2E test
                 break; 
             case 7:
+                saveCSV();
                 printf("Have a nice day!\n");
                 break;             
             default:
