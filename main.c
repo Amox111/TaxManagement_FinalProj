@@ -329,7 +329,7 @@ void updateRecord() {
     char again_update_another[5];
 
     do {    
-        printf("========================================\n");      
+        printf("========================================");      
         printf("\n           Update Record Menu\n");
         printf("========================================\n");        
         printf("Enter Payment ID to update (Type 'NO' to cancel):");
@@ -362,7 +362,7 @@ void updateRecord() {
             int done_updating = 0;
             
             do {
-                printf("========================================\n");        
+                printf("========================================");        
                 printf("\nWhat would you like to update?\n");
                 printf("[1] New Amount (Current:%.2f)\n", records[found_index].amount);
                 printf("[2] New Date (Current:%s)\n", records[found_index].paymentDate);
@@ -436,7 +436,7 @@ void deleteRecord(){
     do { 
         foundID = -1; 
         clear_input_buffer(); 
-        printf("========================================\n");
+        printf("========================================");
         printf("\n            Delete Record Menu\n");
         printf("========================================\n");
         printf("Type the PaymentID that you want to delete (Type 'NO' to cancel):");
@@ -499,14 +499,14 @@ void searchRecord() {
     
     do { 
         foundCount = 0; 
-        printf("========================================\n");        
-        printf("\n             Search Record Menu\n");
+        printf("========================================");        
+        printf("\n            Search Record Menu\n");
         printf("========================================\n");        
         printf("Enter payment ID or payer name to search (Type 'NO' to cancel):");
 
         clear_input_buffer(); 
         if (scanf("%99[^\n]", searchTerm) != 1) {
-            clear_input_buffer();
+            clear_input_buffer(); 
             continue;
         }
         clear_input_buffer(); 
@@ -516,15 +516,16 @@ void searchRecord() {
             break; 
         }
 
-        printf("========================================\n");
-        printf("\n                Search Results\n");
+        printf("========================================");
+        printf("\n             Search Results\n");
         for (int i = 0; i < recordCount; i++) {
             int match = 0;
-            if (strcmp(records[i].paymentID, searchTerm) == 0) {    //check for exact ID match
+            
+            if (strcmp(records[i].paymentID, searchTerm) == 0) {
                 match = 1;
             } 
 
-            if (!match && strstr(records[i].payerName, searchTerm) != NULL) {      //check for partial name match
+            if (!match && strstr(records[i].payerName, searchTerm) != NULL) {    
                 match = 1;
             }
 
@@ -545,15 +546,14 @@ void searchRecord() {
             
             char action[5];
             if (scanf("%4s", action) != 1) { 
-                 clear_input_buffer();
                  continue;
             }
-            clear_input_buffer();
             
             if (action[0] == 'U' || action[0] == 'u') {
                 updateRecord(); 
             } else if (action[0] == 'D' || action[0] == 'd') {
                 deleteRecord(); 
+
             } else {
                 printf("No action selected.\n");
             }
@@ -563,8 +563,6 @@ void searchRecord() {
         printf("Type 'YES' to search again or any other key to return to main menu:");
         
         scanf("%4s", again_search_another);
-        clear_input_buffer();
-
     } while (strcmp(again_search_another, "YES") == 0);
 }
 
