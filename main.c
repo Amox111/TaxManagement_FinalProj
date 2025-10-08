@@ -183,7 +183,7 @@ void addRecord() {
         printf("========================================\n"); 
         printf("             Add the record\n");      
         printf("========================================\n"); 
-        printf("Enter Payment ID (Format: 1 Letter + 3 Digits, or type 'EXIT' to cancel):");
+        printf("Enter Payment ID (Format: 1 Letter + 3 Digits, or type 'NO' to skip):");
         
         char tempID[ID_SIZE + 5]; 
 
@@ -192,10 +192,10 @@ void addRecord() {
             clear_input_buffer();
             continue;
         }
+        
         clear_input_buffer(); 
         
-        if (strcmp(tempID, "EXIT") == 0 || strcmp(tempID, "exit") == 0) {
-            printf("Addition cancelled. Returning to main menu.\n");
+        if (strcmp(tempID, "NO") == 0 || strcmp(tempID, "no") == 0) {
             return; 
         }
         
@@ -204,7 +204,7 @@ void addRecord() {
 
         if (isValidPaymentID(newRecord.paymentID)) {
             if (findRecordIndex(newRecord.paymentID) != -1) {
-                printf("Error: Payment ID '%s' already exists. Please enter a unique ID.\n", newRecord.paymentID);
+                printf("Error: Payment ID '%s' already exists. Please enter a unique ID...\n", newRecord.paymentID);
                 continue; 
             }
             
@@ -214,28 +214,6 @@ void addRecord() {
         }
     } while (1);
 
-//pyerName
-    do {
-        printf("Enter Payer's First Name (Max %zu chars):", sizeof(firstName) - 1);
-        if (scanf("%49[^\n]", firstName) != 1 || strlen(firstName) == 0) { 
-            printf("Name cannot be empty!!!\n");
-            clear_input_buffer(); 
-            continue;
-        }
-        clear_input_buffer();
-        break;
-    } while (1);
-
-    do {
-        printf("Enter Payer's Last Name (Max %zu chars):", sizeof(lastName) - 1);
-        if (scanf("%49[^\n]", lastName) != 1 || strlen(lastName) == 0) { 
-            printf("Name cannot be empty!!!\n");
-            clear_input_buffer(); 
-            continue;
-        }
-        clear_input_buffer(); 
-        break;
-    } while (1);
     
     snprintf(newRecord.payerName, STRING_SIZE, "%s %s", firstName, lastName);
     
@@ -304,7 +282,7 @@ void addRecord() {
         }
     } while (1);
 
-    //confirm  
+//confirm  
     printf("================Confirm=================\n");    
     printf("This data will be added:");
     print_record(&newRecord);
@@ -312,6 +290,8 @@ void addRecord() {
     
     char confirmation[10];
     if (scanf("%9s", confirmation) != 1) { return; }
+    
+    clear_input_buffer(); 
 
     if (strcmp(confirmation, "YES") == 0) {
         records[recordCount] = newRecord;
@@ -697,7 +677,7 @@ int main(){
             #endif
         }
 
-        switch (choice){
+            switch (choice){
             case 1:
                 do {
                     addRecord();
@@ -705,14 +685,16 @@ int main(){
                     printf("\nWant to add another record?\n");
                     printf("Type 'YES' to add another record or any other key to back to main menu:");
                     char again[5];
+
                     if (scanf("%4s", again) != 1) { 
                         break;
                     }
+                    
                     if (strcmp(again, "YES") != 0) {
                         break;
                     }
                 } while (1);
-                break; 
+                break;
             case 2:
                 updateRecord(); 
                 break;          
