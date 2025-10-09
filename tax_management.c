@@ -576,20 +576,20 @@ int memoryLeakTest() {
 //unit
 void run_unit_tests() {
     printf("========================================\n");
-    printf("             Running Unit Tests \n");
+    printf("              Run Unit Tests \n");
     printf("========================================\n");
     recordCount = 0; 
     printf("Normal Test: %s\n", addPaymentTest() ? "PASS" : "FAIL");
     printf("Boundary Test: %s\n", boundaryTest() ? "PASS" : "FAIL");
     printf("Extreme Test: %s\n", extremeTest() ? "PASS" : "FAIL");
     printf("Memory Leak Test: %s\n", memoryLeakTest() ? "PASS" : "FAIL");
-    printf("All Unit Tests Completed.\n");
+    printf("All Unit Tests Completed...\n");
 }
 
 //e2e
 void run_e2e_tests() {
     printf("========================================\n");
-    printf("           Running End-to-End Test\n");
+    printf("         Running End-to-End Test\n");
     printf("========================================\n");
     recordCount = 0; 
 

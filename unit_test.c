@@ -51,13 +51,13 @@ void test_add_and_delete_record_memory() {
 
 void unitTest() {
     printf("========================================\n");
-    printf("        UNIT TESTING STARTED\n");
+    printf("             UNIT TESTING\n");
     printf("========================================\n");
     test_isValidPaymentID();
     test_isValidDate();
     test_findRecordIndex();
     test_add_and_delete_record_memory();
     printf("========================================\n");
-    printf(" ALL UNIT TESTS PASSED SUCCESSFULLY!\n");
+    printf(" ALL UNIT TESTS PASSED SUCCESSFULLY!!!\n");
     printf("========================================\n");
 }

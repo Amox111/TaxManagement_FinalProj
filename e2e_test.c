@@ -5,7 +5,7 @@
 
 void E2E_Test() {
     printf("========================================\n");
-    printf("          E2E TEST STARTED\n");
+    printf("                E2E TEST \n");
     printf("========================================\n");
 
     suppress_save_message = 1;
