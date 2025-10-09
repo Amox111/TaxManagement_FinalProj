@@ -27,7 +27,7 @@ gcc tax_management.c unit_test.c e2e_test.c -o tax_management
 - **Search for information** by payment ID and payer name.
 - **Unit test** and **E2E test**
 
-## CSV
+## CSV Layout
 paymentID,payerName,taxType,amount,paymentDate
 
 ## Display menu
