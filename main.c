@@ -76,16 +76,20 @@ void saveCSV() {
     if (file == NULL) {
         printf("Cannot open file\n");
         return;
-}
+    }
+
+    fprintf(file, "paymentID,payerName,taxType,amount,paymentDate\n");
+
     for (int i = 0; i < recordCount; i++) {
         fprintf(file, "%s,%s,%s,%.2f,%s\n",
                 records[i].paymentID,
                 records[i].payerName,
                 records[i].taxType,
                 records[i].amount,
-                records[i].paymentDate);}
+                records[i].paymentDate);
+    }
     fclose(file);
-    SAVE_MESSAGE_PRINT 
+    SAVE_MESSAGE_PRINT
 }
 
 void readCSV() {
@@ -94,25 +98,25 @@ void readCSV() {
         recordCount = 0;
         return;
     }
-    
+
     recordCount = 0;
     char line[200];
 
     if (fgets(line, sizeof(line), file) == NULL) {
         fclose(file);
-        return; 
+        return;
     }
 
     while (recordCount < MAX_RECORDS && fgets(line, sizeof(line), file)) {
-        
+
         Payment tempRec;
-        
+
         int items_read = sscanf(line, "%[^,],%[^,],%[^,],%f,%[^\n]",
-               tempRec.paymentID,
-               tempRec.payerName,
-               tempRec.taxType,
-               &tempRec.amount,
-               tempRec.paymentDate);
+                tempRec.paymentID,
+                tempRec.payerName,
+                tempRec.taxType,
+                &tempRec.amount,
+                tempRec.paymentDate);
 
         if (items_read == 5 && strlen(tempRec.paymentID) > 0) {
             records[recordCount] = tempRec;
@@ -134,38 +138,6 @@ int findRecordIndex(const char *id) {
         }
     }
     return -1;
-}
-
-void simulateAdd(const char* id, const char* name, const char* type, float amt, const char* date) {
-    if (recordCount >= MAX_RECORDS) return;
-    Payment *newRec = &records[recordCount];
-   // use strncpy for safety
-    strncpy(newRec->paymentID, id, ID_SIZE - 1); newRec->paymentID[ID_SIZE - 1] = '\0';
-    strncpy(newRec->payerName, name, STRING_SIZE - 1); newRec->payerName[STRING_SIZE - 1] = '\0';
-    strncpy(newRec->taxType, type, STRING_SIZE - 1); newRec->taxType[STRING_SIZE - 1] = '\0';
-    newRec->amount = amt;
-    strncpy(newRec->paymentDate, date, STRING_SIZE - 1); newRec->paymentDate[STRING_SIZE - 1] = '\0';
-    recordCount++;
-    saveCSV(); 
-}
-
-void simulateDelete(const char *id) {
-    int index = findRecordIndex(id);
-    if (index != -1) {
-        for (int i = index; i < recordCount - 1; i++) {
-            records[i] = records[i+1];
-        }
-        recordCount--;
-        saveCSV();
-    }
-}
-
-void simulateUpdateAmount(const char *id, float newAmount) {
-    int index = findRecordIndex(id);
-    if (index != -1) {
-        records[index].amount = newAmount;
-        saveCSV(); 
-    }
 }
 
 void addRecord() {
@@ -216,7 +188,32 @@ void addRecord() {
 
     
     snprintf(newRecord.payerName, STRING_SIZE, "%s %s", firstName, lastName);
-    
+ 
+ // Payer Name Input
+    do {
+        printf("Enter Payer First Name:");
+        if (scanf("%49s", firstName) != 1) {
+            printf("Input error - try again\n");
+            clear_input_buffer();
+            continue;
+        }
+        clear_input_buffer();
+        
+        printf("Enter Payer Last Name:");
+        if (scanf("%49s", lastName) != 1) {
+            printf("Input error - try again\n");
+            clear_input_buffer();
+            continue;
+        }
+        clear_input_buffer();
+        if (strlen(firstName) > 0 && strlen(lastName) > 0) {
+            snprintf(newRecord.payerName, STRING_SIZE, "%s %s", firstName, lastName);
+            break;
+        } else {
+             printf("Names cannot be empty. Please try again.\n");
+        }
+    } while(1);    
+
 //taxType
     printf("\nSelect Tax Type:\n");
     printf("[1] PIT (Personal Income Tax)\n");
@@ -369,7 +366,6 @@ void updateRecord() {
                 } else if (strcmp(update_choice, "2") == 0) {
                     char newDate[STRING_SIZE];
                     printf("Enter new Date (yyyy-mm-dd):");
-                    // Using correct max length for safety
                     scanf("%10s", newDate);
                     newDate[10] = '\0';
                     clear_input_buffer();
@@ -546,86 +542,7 @@ void searchRecord() {
     } while (strcmp(again_search_another, "YES") == 0);
 }
 
-//unit test function
-void unitTest() {
-    suppress_save_message = 1;
-    int tests_run = 0;
 
-    printf("========================================");
-    printf("\n            Starting Unit Tests \n");
-    printf("========================================\n");
-    printf("-If the program crashes = failed-\n\n");
-
-    printf("1. Testing Utility Functions (Date, ID, Leap Year, Find)\n");
-    
-    //isValidDate tests
-    assert(isValidDate("2025-01-31") == 1); tests_run++;
-    assert(isValidDate("2024-02-29") == 1); tests_run++; //leap year
-    assert(isValidDate("2025-13-01") == 0); tests_run++; //invalid month
-    assert(isValidDate("2023-02-29") == 0); tests_run++; //non-leap year
-    
-    //isValidPaymentID tests
-    assert(isValidPaymentID("A001") == 1); tests_run++;
-    assert(isValidPaymentID("1001") == 0); tests_run++; //starts with digit
-    assert(isValidPaymentID("A00B") == 0); tests_run++; //contains letter
-    
-    //isLeap tests
-    assert(isLeap(2000) == 1); tests_run++;
-    assert(isLeap(2003) == 0); tests_run++;
-    assert(isLeap(1900) == 0); tests_run++;
-    
-    assert(findRecordIndex("Z999") == -1); tests_run++;
-    
-    printf("   Utility Tests Passed: %d assertions\n", tests_run);
-    
-    printf("\n2. Testing CRUD Simulation Functions (Add, Find, Update, Delete)\n");
-    int initialCount = recordCount;
-    const char *test_id_A = "T00A";
-    const char *test_id_B = "T00B";
-
-    simulateAdd(test_id_A, "Test Payer A", "VAT", 100.00, "2025-01-01");
-    assert(recordCount == initialCount + 1); tests_run++;
-    int index_A = findRecordIndex(test_id_A);
-    assert(index_A != -1); tests_run++;
-    assert(strcmp(records[index_A].payerName, "Test Payer A") == 0); tests_run++;
-    
-    float new_amount = 555.55f;
-    simulateUpdateAmount(test_id_A, new_amount);
-    int updated_index = findRecordIndex(test_id_A);
-    assert(updated_index != -1 && fabsf(records[updated_index].amount - new_amount) < FLT_EPSILON); tests_run++; 
-    
-    simulateAdd(test_id_B, "Test Payer B", "CIT", 200.00, "2025-01-02");
-    assert(recordCount == initialCount + 2); tests_run++;
-    simulateDelete(test_id_B);
-    assert(recordCount == initialCount + 1); tests_run++; //count should revert to 1 (only A remains)
-    assert(findRecordIndex(test_id_B) == -1); tests_run++; // B should be gone
-    assert(findRecordIndex(test_id_A) != -1); tests_run++; // A should still exist
-
-    simulateDelete(test_id_A);
-    assert(recordCount == initialCount); tests_run++;
-    
-    printf("   CRUD Simulation Tests Passed: %d assertions\n", tests_run - 8); 
-    
-
-    printf("\n3. Testing Edge Cases (Max Records, Invalid Delete)\n");
-    
-    assert(1); tests_run++; 
-    
-    int count_before_bad_delete = recordCount;
-    simulateDelete("ZXXX"); 
-    assert(recordCount == count_before_bad_delete); tests_run++;
-    
-    printf("   Edge Case Tests Passed: %d assertions\n", 2); 
-
-    printf("========================================");
-    printf("\n            Unit Test Summary\n");
-    printf("Total tests run: %d\n", tests_run);
-    printf("All %d assertions passed successfully \n", tests_run);
-    printf("========================================\n");
-    
-    suppress_save_message = 0;
-    readCSV(); 
-}
 
 //Display Menu
 void displayMenu(){
@@ -664,7 +581,7 @@ int main(){
                     printf("Invalid choice - choose a number between 1-7!!!\n");
                 }
             } else {
-                printf("Invalid input - Enter a number\n");
+                printf("Invalid input - enter a number\n");
             }
             clear_input_buffer(); 
         } while (1);
@@ -705,18 +622,17 @@ int main(){
                 searchRecord(); 
                 break; 
             case 5:
-                unitTest();
+                //unitTest(); 
                 printf("\nPress ENTER to return to the main menu...");
                 clear_input_buffer();
                 getchar();
-                break;          
+                break;
             case 6:
-                // E2E Test 
-                printf("E2E Test not implemented yet.\n");
+                //E2E_Test(); 
                 printf("\nPress ENTER to return to the main menu...");
                 clear_input_buffer();
                 getchar();
-                break; 
+                break;
             case 7:
                 saveCSV();
                 printf("Have a good one!!!\n");

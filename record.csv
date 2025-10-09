@@ -1,3 +1,5 @@
+paymentID,payerName,taxType,amount,paymentDate
+a000,Amora Murin,Personal Income Tax,532153.13,2019-11-19
 A001,Adam Rock,Income Tax,45667.00,1999-12-01
 l901,Lilly North,Vat,7821.12,1999-01-03
 M123,Amora Host,Wealth taxVat,780.78,2000-05-11
@@ -10,4 +12,3 @@ l021,Lilly Mail,Income Tax,789452.31,2025-05-05
 k004,Hills tons,Special Business Tax,78523.33,2023-05-06
 r222,Kaela Kovalskia,Personal Income Tax,45782.22,2022-05-14
 e784,Marine Houshou,Personal Income Tax,74120.22,2023-10-16
-
