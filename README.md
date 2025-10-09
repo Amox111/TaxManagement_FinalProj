@@ -1,6 +1,12 @@
 # [60]ระบบจัดการข้อมูลการชำระภาษี
 Tax payment data management system program using C language.
 
+## Run on Windows
+
+
+## Run on Linux/MacOS
+
+
 ## Main features 
 - **Add information** include adding payment ID, payer name, tax type, amount and date.
 - **Update information** update the amount and date by searching the payment ID.
