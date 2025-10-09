@@ -185,10 +185,6 @@ void addRecord() {
         }
     } while (1);
 
-    
-    snprintf(newRecord.payerName, STRING_SIZE, "%s %s", firstName, lastName);
- 
- // Payer Name Input
     do {
         printf("Enter Payer First Name:");
         if (scanf("%49s", firstName) != 1) {
@@ -221,8 +217,7 @@ void addRecord() {
     printf("[4] WHT (Withholding Tax)\n");
     printf("[5] SBT (Special Business Tax)\n");
     printf("[6] SD (Stamp duty)\n");
-    printf("[7] Other (Specify Manually)\n");
-    printf("Enter choice (1-7):");
+    printf("Enter choice (1-6):");
     
     if (scanf("%d", &tax_choice) != 1) {
         printf("Invalid choice - Cancelled!!!\n");
@@ -237,14 +232,6 @@ void addRecord() {
         case 4: strncpy(newRecord.taxType, "Withholding Tax", STRING_SIZE - 1); break;
         case 5: strncpy(newRecord.taxType, "Special Business Tax", STRING_SIZE - 1); break;
         case 6: strncpy(newRecord.taxType, "Stamp duty", STRING_SIZE - 1); break;
-        case 7:
-            printf("Enter Custom Tax Type Name:");
-            if (scanf("%99[^\n]", newRecord.taxType) != 1) {
-                printf("Invalid input - Cancelled!!!\n");
-                return;
-            }
-            newRecord.taxType[STRING_SIZE - 1] = '\0'; 
-            break;
         default:
             printf("Invalid tax type - Cancelled!!!\n");
             return;
@@ -352,9 +339,9 @@ void updateRecord() {
                 clear_input_buffer();
                 
                 if (strcmp(update_choice, "1") == 0) {
-                    float newAmount;
+                    double newAmount; 
                     printf("Enter new Amount (must be positive):");
-                    if (scanf("%lf", &newAmount) == 1 && newAmount > 0.0f) { 
+                    if (scanf("%lf", &newAmount) == 1 && newAmount > 0.0) {
                         records[found_index].amount = newAmount;
                         printf("Updated successfully\n");
                     } else {
@@ -552,11 +539,20 @@ int boundaryTest() {
 
 int extremeTest() {
     Payment p;
-    strcpy(p.paymentID, "EXTREME123456789012345678901234567890");
-    strcpy(p.payerName, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    strcpy(p.taxType, "INCOME");
+    strncpy(p.paymentID, "E999", ID_SIZE - 1); 
+    p.paymentID[ID_SIZE - 1] = '\0';
+    
+    strncpy(p.payerName, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", STRING_SIZE - 1);
+    p.payerName[STRING_SIZE - 1] = '\0';
+    
+    strncpy(p.taxType, "INCOME", STRING_SIZE - 1);
+    p.taxType[STRING_SIZE - 1] = '\0';
+    
     p.amount = 9999999999.99;
-    strcpy(p.paymentDate, "2099-12-31");
+    
+    strncpy(p.paymentDate, "2099-12-31", STRING_SIZE - 1);
+    p.paymentDate[STRING_SIZE - 1] = '\0';
+    
     records[recordCount++] = p;
     return p.amount == 9999999999.99;
 }
