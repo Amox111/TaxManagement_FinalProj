@@ -396,7 +396,6 @@ void updateRecord() {
 
         printf("\nDo you want to update another record?\n");
         printf("Type 'YES' to update another or any other key to return to main menu:");
-        
         scanf("%4s", again_update_another);
 
     } while (strcmp(again_update_another, "YES") == 0);
@@ -459,9 +458,7 @@ void deleteRecord(){
 
         printf("\nDo you want to delete another record?\n");
         printf("Type 'YES' to delete another or any other key to return to main menu:");
-        
         scanf("%4s", again_delete_another);
-        clear_input_buffer();
         
     } while (strcmp(again_delete_another, "YES") == 0);
 }
@@ -696,9 +693,11 @@ int main(){
                 break;
             case 2:
                 updateRecord(); 
+                clear_input_buffer();
                 break;          
             case 3:
                 deleteRecord(); 
+                clear_input_buffer();
                 break; 
             case 4:
                 searchRecord(); 
