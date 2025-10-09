@@ -2,10 +2,11 @@
 Tax payment data management system program using C language.
 
 ## Run on Windows
+```md
 
 
 ## Run on Linux/MacOS
-
+```md
 
 ## Main features 
 - **Add information** include adding payment ID, payer name, tax type, amount and date.
