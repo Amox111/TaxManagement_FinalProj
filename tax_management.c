@@ -572,7 +572,7 @@ int memoryLeakTest() {
 //unit
 void run_unit_tests() {
     printf("========================================\n");
-    printf("              Run Unit Tests \n");
+    printf("           Running Unit Tests \n");
     printf("========================================\n");
     recordCount = 0; 
     printf("Normal Test: %s\n", addPaymentTest() ? "PASS" : "FAIL");
