@@ -30,6 +30,11 @@ gcc tax_management.c unit_test.c e2e_test.c -o tax_management
 <img width="463" height="345" alt="image" src="https://github.com/user-attachments/assets/6069feb8-57c8-4025-8482-6a0e13bec30c" />
 
 ### Unit test
+- Normal Test
+- Boundary Test
+- Extreme Test
+- Memory Leak Test
 ### End-To-End test
+##
 
 
