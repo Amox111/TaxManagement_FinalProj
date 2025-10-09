@@ -11,6 +11,7 @@ Tax payment data management system program using C language.
 
 ## Run on Windows
 ```md
+gcc tax_management.c unit_test.c e2e_test.c -o tax_management.exe
 .\tax_management.exe
 ```
 ## Run on Linux/macOS
@@ -26,6 +27,9 @@ gcc tax_management.c unit_test.c e2e_test.c -o tax_management
 - **Search for information** by payment ID and payer name.
 - **Unit test** and **E2E test**
 
+## CSV
+paymentID,payerName,taxType,amount,paymentDate
+
 ## Display menu
 <img width="463" height="345" alt="image" src="https://github.com/user-attachments/assets/6069feb8-57c8-4025-8482-6a0e13bec30c" />
 
@@ -36,5 +40,6 @@ gcc tax_management.c unit_test.c e2e_test.c -o tax_management
 - Memory Leak Test
 ### End-To-End test
 ##
+
 
 
